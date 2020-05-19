@@ -1,26 +1,66 @@
 #pragma once
 #include "BasicElements.h"
-class PhilosophersStone :public Earth, public Fire, public Water, public Air
+int PhilosophersStoneArray[4] = { 1,2,3,4 };
+class PhilosophersStone :public Elements
 {
-	
+	PhilosophersStone();
 };
-class Metal :public Earth, public Fire
-{
-
-};
-class Stone :public Fire, public Water
+PhilosophersStone::PhilosophersStone() :Elements(PhilosophersStoneArray, 4, 10)
 {
 
+}
+//////////////////////////////////
+
+int MetalArray[4] = { 1,2,3,4 };
+class Metal :public Elements
+{
+	Metal();
 };
-class Energy :public Water, public Air
+Metal::Metal() :Elements(MetalArray, 4, 5)
 {
 
+}
+//////////////////////////////////
+
+int StoneArray[4] = { 1,2,3,4 };
+class Stone :public Elements
+{
+	Stone();
 };
-class Spirit :public Air
+Stone::Stone() :Elements(StoneArray, 4, 6)
 {
 
+}
+//////////////////////////////////
+
+int EnergyArray[4] = { 1,2,3,4 };
+class Energy :public Elements
+{
+	Energy();
 };
-class Gold :public Metal
+Energy::Energy() :Elements(EnergyArray, 4, 7)
 {
 
+}
+//////////////////////////////////
+
+int SpiritArray[4] = { 1,2,3,4 };
+class Spirit :public Elements
+{
+	Spirit();
 };
+Spirit::Spirit() : Elements(SpiritArray, 4, 8)
+{
+
+}
+//////////////////////////////////
+
+int GoldArray[4] = { 1,2,3,4, };
+class Gold :public Elements
+{
+	Gold();
+};
+Gold::Gold() :Elements(GoldArray, 4, 9)
+{
+
+}
