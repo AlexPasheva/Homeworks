@@ -1,66 +1,65 @@
-#pragma once
+
 #include "BasicElements.h"
-int PhilosophersStoneArray[4] = { 1,2,3,4 };
 class PhilosophersStone :public Elements
 {
+public:
 	PhilosophersStone();
 };
-PhilosophersStone::PhilosophersStone() :Elements(PhilosophersStoneArray, 4, 10)
+PhilosophersStone::PhilosophersStone() :Elements(HaveTheSameArray, HaveTheSameArray, 4, 10)
 {
-
 }
 //////////////////////////////////
 
-int MetalArray[4] = { 1,2,3,4 };
+
 class Metal :public Elements
 {
+public:
 	Metal();
 };
-Metal::Metal() :Elements(MetalArray, 4, 5)
+Metal::Metal() :Elements(HaveTheSameArray, HaveTheSameArray, 4, 5)
 {
-
 }
+
 //////////////////////////////////
 
-int StoneArray[4] = { 1,2,3,4 };
 class Stone :public Elements
 {
+public:
 	Stone();
 };
-Stone::Stone() :Elements(StoneArray, 4, 6)
+Stone::Stone() :Elements(HaveTheSameArray, HaveTheSameArray, 4, 6)
 {
-
 }
 //////////////////////////////////
 
-int EnergyArray[4] = { 1,2,3,4 };
+
 class Energy :public Elements
 {
+public:
 	Energy();
 };
-Energy::Energy() :Elements(EnergyArray, 4, 7)
+Energy::Energy() :Elements(HaveTheSameArray, HaveTheSameArray, 4, 7)
 {
-
 }
+
 //////////////////////////////////
 
-int SpiritArray[4] = { 1,2,3,4 };
 class Spirit :public Elements
 {
+public:
 	Spirit();
 };
-Spirit::Spirit() : Elements(SpiritArray, 4, 8)
+Spirit::Spirit() : Elements(HaveTheSameArray, HaveTheSameArray, 4, 8)
 {
-
 }
 //////////////////////////////////
 
-int GoldArray[4] = { 1,2,3,4, };
+
 class Gold :public Elements
 {
+public:
 	Gold();
 };
-Gold::Gold() :Elements(GoldArray, 4, 9)
+Gold::Gold() :Elements(HaveTheSameArray, CanReactWithG, 4, 9)
 {
-
 }
