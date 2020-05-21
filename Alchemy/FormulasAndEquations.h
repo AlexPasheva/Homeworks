@@ -12,19 +12,21 @@ protected:
     int capacity;
     void CopyFrom(const Equation& other);
     void Free();
+	void Resize(int NewCappacity);
 public:
-    Equation();
+    Equation(Elements* array, int count);
     Equation(const Equation&);
     Equation& operator=(const Equation&);
     ~Equation();
 
-	int GetCapacity();
+	int GetCount();
 	Elements* GetArray();
 
 	Elements& AtIndex(int index);
-	void Resize(int NewCappacity);
 	void AddShape(const char* element);
+	bool ReactWithEachOther();
 };
+
 void Equation::Free()
 {
     delete[] array;
@@ -37,11 +39,22 @@ void Equation::CopyFrom(const Equation& other)
     for (int i = 0; i < count; i++)
         array[i] = other.array[i];
 }
-Equation::Equation()
+void Equation::Resize(int NewCappacity)
 {
-	this->capacity = 4;
-	array = new Elements[capacity];
-	this->count = 0;
+	Elements* NewArray = new Elements[NewCappacity];
+	for (int i = 0; i < count; i++)
+		NewArray[i] = array[i];
+	delete[] array;
+	array = NewArray;
+	capacity = NewCappacity;
+}
+
+Equation::Equation(Elements* array = { 0 }, int count=1)
+{
+	this->capacity = 16;
+	this->array = new Elements[capacity];
+	this->array = array;
+	this->count = count;
 	this->current = 0;
 }
 Equation::Equation(const Equation& other)
@@ -61,23 +74,16 @@ Equation::~Equation()
 {
 	Free();
 }
-int Equation::GetCapacity()
+
+int Equation::GetCount()
 {
-	return capacity;
+	return count;
 }
 Elements* Equation::GetArray()
 {
 	return array;
 }
-void Equation::Resize(int NewCappacity)
-{
-	Elements* NewArray = new Elements [NewCappacity];
-	for (int i = 0; i < count; i++)
-		NewArray[i] = array[i];
-	delete[] array;
-	array = NewArray;
-	capacity = NewCappacity;
-}
+
 Elements& Equation::AtIndex(int index)
 {
 	return array[index++];
@@ -110,76 +116,57 @@ void Equation::AddShape(const char* element)
 		newObj = Gold();
 	array[this->count++] = newObj;
 }
+bool Equation::ReactWithEachOther()
+{
+	for (int j = 0; j < count; j++)
+	{
+		for (int i = 0; i < count; i++)
+		{
+			if (i == j)
+				continue;
+			if (!this->GetArray()[j].React(this->GetArray()[i]))
+				return false;
+		}
+	}
+	return true;
+}
 
 class Formula: public Equation
 {
 private:
-    Equation* lhs;
-	int LHSCapacity;
-    Equation rhs[2];
-	void CopyFrom(const Formula& other);
-	void Free();
+	char op;
+    Equation lhs;
+    Elements rhs;
+
 public:
-	Formula();
-	Formula(const Formula&);
-	Formula& operator=(const Formula&);
-	~Formula();
+	Formula(Elements rhs);
+	Formula(Equation lhs = { 0 }, Elements rhs = 0);
 
-	bool ValidLHS();
-	bool ValidRHS();
+	char GetOp();
+
+	bool Valid();
 };
-Formula::Formula(Equation* lhs, int LHSCapacity)
-{
 
-}
-void Formula::Free()
+Formula::Formula(Elements rhs)
 {
-	delete[] lhs;
+	op = '/';
+	lhs = 0;
+	this->rhs = rhs;
 }
-void Formula::CopyFrom(const Formula& other)
+Formula::Formula(Equation lhs, Elements rhs)
 {
-	this->lhs = new Equation[other.LHSCapacity];
-	LHSCapacity = other.LHSCapacity;
-	for (int i = 0; i < LHSCapacity; i++)
-		lhs[i] = other.lhs[i];
+	op = '+';
+	this->lhs = lhs;
+	this->rhs = rhs;
 }
-Formula::Formula()
-{
-	this->LHSCapacity = 4;
-	lhs = new Equation[LHSCapacity];
-}
-Formula::Formula(const Formula& other)
-{
-	CopyFrom(other);
-}
-Formula& Formula::operator=(const Formula& other)
-{
-	if (this != &other)
-	{
-		Free();
-		CopyFrom(other);
-	}
-	return *this;
-}
-Formula::~Formula()
-{
-	Free();
-}
-bool Formula::ValidLHS()
-{
-	for (int i = 0; i < LHSCapacity; i++)
-	{
-		for (int j = 0; j < lhs[i].GetCapacity(); j++)
-		{
-			if (lhs->GetArray()->React())
-			{
 
-			}
-		}
-	}
-	
-}
-bool Formula::ValidRHS()
-{
 
+char Formula::GetOp()
+{
+	return op;
+}
+
+bool Formula::Valid()
+{
+	return lhs.ReactWithEachOther();
 }
