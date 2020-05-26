@@ -1,67 +1,67 @@
 
-#include "DerivativeElements.h"
+#include "Elements.h"
 #include <cassert>
 #include <string>
 
 class Equation
 {
 protected:
-    Elements* array;
-    int current;
+    Elements** array;
     int count;
     int capacity;
     void CopyFrom(const Equation& other);
     void Free();
-	void Resize(int NewCappacity);
+	void Resize();
 public:
-    Equation(Elements* array, int count);
+    Equation();
     Equation(const Equation&);
     Equation& operator=(const Equation&);
     ~Equation();
 
 	int GetCount();
-	Elements* GetArray();
 
-	Elements& AtIndex(int index);
-	void AddShape(const char* element);
-	bool ReactWithEachOther();
+	Elements* AtIndex(int index);
+	void Add(Elements* current);
+	void AddDerivatedElement(DerivedType type);
+	void AddBaseElement(BaseType type);
 };
 
+Equation::Equation()
+{
+	count = 0;
+	capacity = 8;
+	array = new Elements * [capacity];
+}
 void Equation::Free()
 {
-    delete[] array;
+	for (int i = 0; i < count; i++)
+		delete array[i];
+
+	delete[] array;
+}
+void Equation::Resize()
+{
+	Elements** temp = new Elements * [capacity * 2];
+	capacity *= 2;
+	for (int i = 0; i < count; i++)
+		temp[i] = array[i];
+	delete[] array;
+	array = temp;
 }
 void Equation::CopyFrom(const Equation& other)
 {
-    array = new Elements[other.capacity];
-    capacity = other.capacity;
-    count = other.count;
-    for (int i = 0; i < count; i++)
-        array[i] = other.array[i];
-}
-void Equation::Resize(int NewCappacity)
-{
-	Elements* NewArray = new Elements[NewCappacity];
-	for (int i = 0; i < count; i++)
-		NewArray[i] = array[i];
-	delete[] array;
-	array = NewArray;
-	capacity = NewCappacity;
-}
+	array = new Elements* [other.count];
+	capacity = other.capacity;
+	count = other.count;
+	for (int i = 0; i < other.count; i++)
+		array[i] = other.array[i]->clone();
 
-Equation::Equation(Elements* array = { 0 }, int count=1)
-{
-	this->capacity = 16;
-	this->array = new Elements[capacity];
-	this->array = array;
-	this->count = count;
-	this->current = 0;
 }
 Equation::Equation(const Equation& other)
 {
 	CopyFrom(other);
 }
-Equation& Equation::operator=(const Equation& other)
+Equation& Equation::operator = (const Equation& other)
 {
 	if (this != &other)
 	{
@@ -79,94 +79,64 @@ int Equation::GetCount()
 {
 	return count;
 }
-Elements* Equation::GetArray()
+
+Elements* Equation::AtIndex(int index)
 {
-	return array;
+	if (count>=index)
+		return array[index];
+	return 0;
+}
+void Equation::AddBaseElement(BaseType type)
+{
+	BaseElement* current = new BaseElement(type);
+	Add(current);
+
+}
+void Equation::AddDerivatedElement(DerivedType type)
+{
+	DerivedElement* current = new DerivedElement(type);
+	Add(current);
+}
+void Equation::Add(Elements* current)
+{
+	if (count == capacity)
+		Resize();
+	array[count++] = current;
 }
 
-Elements& Equation::AtIndex(int index)
-{
-	return array[index++];
-}
-void Equation::AddShape(const char* element)
-{
-	if (count == this->capacity)
-		Resize(capacity * 2);
-	Elements newObj;
-
-	if (strcmp(element, "Fire") == 0)
-		newObj = Fire();
-	else if (strcmp(element, "Air") == 0)
-		newObj = Air();
-	else if (strcmp(element, "Earth") == 0)
-		newObj = Earth();
-	else if (strcmp(element, "Water") == 0)
-		newObj = Water();
-	else if (strcmp(element, "PhilosophersStone") == 0)
-		newObj = PhilosophersStone();
-	else if (strcmp(element, "Metal") == 0)
-		newObj = Metal();
-	else if (strcmp(element, "Stone") == 0)
-		newObj = Stone();
-	else if (strcmp(element, "Energy") == 0)
-		newObj = Energy();
-	else if (strcmp(element, "Spirit") == 0)
-		newObj = Spirit();
-	else if (strcmp(element, "Gold") == 0)
-		newObj = Gold();
-	array[this->count++] = newObj;
-}
-bool Equation::ReactWithEachOther()
-{
-	for (int j = 0; j < count; j++)
-	{
-		for (int i = 0; i < count; i++)
-		{
-			if (i == j)
-				continue;
-			if (!this->GetArray()[j].React(this->GetArray()[i]))
-				return false;
-		}
-	}
-	return true;
-}
 
 class Formula: public Equation
 {
 private:
 	char op;
     Equation lhs;
-    Elements rhs;
+    Equation rhs;
 
 public:
-	Formula(Elements rhs);
-	Formula(Equation lhs = { 0 }, Elements rhs = 0);
+	Formula(Equation rhs);
+	Formula(Equation lhs, Equation rhs);
 
 	char GetOp();
 
 	bool Valid();
 };
 
-Formula::Formula(Elements rhs)
+Formula::Formula(Equation rhs)
 {
 	op = '/';
-	lhs = 0;
 	this->rhs = rhs;
 }
-Formula::Formula(Equation lhs, Elements rhs)
+Formula::Formula(Equation lhs, Equation rhs)
 {
 	op = '+';
 	this->lhs = lhs;
 	this->rhs = rhs;
 }
-
-
 char Formula::GetOp()
 {
 	return op;
 }
-
 bool Formula::Valid()
 {
-	return lhs.ReactWithEachOther();
+	
 }
