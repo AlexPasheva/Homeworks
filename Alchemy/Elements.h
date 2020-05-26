@@ -1,4 +1,3 @@
-
 #include <iostream>
 enum BaseType { Earth, Fire, Water, Air  };
 enum DerivedType { PhilosophersStone, Metal, Stone, Energy, Spirit, Gold };
@@ -17,6 +16,8 @@ public:
 	virtual bool ReactsWithEnergy() = 0;
 	virtual bool ReactsWithSpirit() = 0;
 	virtual bool ReactsWithGold() = 0;
+
+	virtual Elements* clone() = 0;
 };
 class BaseElement :public Elements
 {
@@ -35,6 +36,8 @@ public:
 	bool ReactsWithEnergy();
 	bool ReactsWithSpirit();
 	bool ReactsWithGold();
+
+	Elements* clone();
 };
 BaseType BaseElement::GetType()
 {
@@ -116,6 +119,7 @@ bool BaseElement::ReactsWithAir()
 		return true;
 	}
 }
+
 bool BaseElement::ReactsWithPhilosophersStone()
 {
 	return true;
@@ -141,6 +145,12 @@ bool BaseElement::ReactsWithGold()
 	return true;
 }
 
+Elements* BaseElement::clone()
+{
+	BaseElement* NewEl = new BaseElement(*this);
+	return NewEl;
+}
+
 class DerivedElement :public Elements
 {
 private:
@@ -160,6 +170,8 @@ public:
 	bool ReactsWithEnergy();
 	bool ReactsWithSpirit();
 	bool ReactsWithGold();
+
+	Elements* clone();
 };
 DerivedElement::DerivedElement(DerivedType type)
 {
@@ -254,3 +266,8 @@ bool DerivedElement::ReactsWithGold()
 	return (this->ReactsWithEarth() && this->ReactsWithFire());
 }
 
+Elements* DerivedElement::clone()
+{
+	DerivedElement* NewEl = new DerivedElement(*this);
+	return NewEl;
+}
