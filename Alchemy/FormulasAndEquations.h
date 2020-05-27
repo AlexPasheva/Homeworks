@@ -1,11 +1,8 @@
-
 #include "Elements.h"
-#include <cassert>
-#include <string>
 
 class Equation
 {
-protected:
+private:
     Elements** array;
     int count;
     int capacity;
@@ -22,10 +19,10 @@ public:
 
 	Elements* AtIndex(int index);
 	void Add(Elements* current);
-	void AddDerivatedElement(DerivedType type);
-	void AddBaseElement(BaseType type);
+	void AddDerivatedElement(Type type);
+	void AddBaseElement(Type type);
+	bool IsValid();
 };
-
 Equation::Equation()
 {
 	count = 0;
@@ -86,13 +83,12 @@ Elements* Equation::AtIndex(int index)
 		return array[index];
 	return 0;
 }
-void Equation::AddBaseElement(BaseType type)
+void Equation::AddBaseElement(Type type)
 {
 	BaseElement* current = new BaseElement(type);
 	Add(current);
-
 }
-void Equation::AddDerivatedElement(DerivedType type)
+void Equation::AddDerivatedElement(Type type)
 {
 	DerivedElement* current = new DerivedElement(type);
 	Add(current);
@@ -103,28 +99,141 @@ void Equation::Add(Elements* current)
 		Resize();
 	array[count++] = current;
 }
+bool Equation::IsValid()
+{
+	for (int j = 0; j < count; j++)
+	{
+		for (int i = 0; i < count; i++)
+		{
+			if (i == j)
+				continue;
+			if (array[i]->GetType()==Earth)
+			{
+				if (!array[j]->ReactsWithEarth() == false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == Air)
+			{
+				if (!array[j]->ReactsWithAir() == false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == Water)
+			{
+				if (!array[j]->ReactsWithWater() == false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == Fire)
+			{
+				if (!array[j]->ReactsWithFire() == false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == Metal)
+			{
+				if (!array[j]->ReactsWithMetal() == false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == Stone)
+			{
+				if (!array[j]->ReactsWithStone() == false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == Energy)
+			{
+				if (!array[j]->ReactsWithEnergy() == false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == Spirit)
+			{
+				if (array[j]->ReactsWithSpirit()==false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == Gold)
+			{
+				if (array[j]->ReactsWithGold() == false)
+				{
+					return false;
+				}
+			}
+			else if (array[i]->GetType() == PhilosophersStone)
+			{
+				if (array[j]->ReactsWithPhilosophersStone() == false)
+				{
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
 
-
-class Formula: public Equation
+class Formula
 {
 private:
 	char op;
-    Equation lhs;
-    Equation rhs;
+	Equation lhs;
+	Equation rhs;
 
 public:
-	Formula(Equation rhs);
+	Formula(char op = '+', Type type = Air);
 	Formula(Equation lhs, Equation rhs);
 
 	char GetOp();
 
 	bool Valid();
 };
-
-Formula::Formula(Equation rhs)
+Formula::Formula(char op, Type type)
 {
-	op = '/';
-	this->rhs = rhs;
+	if (op == '/' && (type == Earth || type == Fire || type == Water || type == Air))
+	{
+		rhs.AddBaseElement(type);
+		rhs.AddBaseElement(type);
+	}
+	else if (op == '/' && (type == PhilosophersStone))
+	{
+		rhs.AddDerivatedElement(type);
+		rhs.AddDerivatedElement(type);
+	}
+	else if (op == '/' && (type == Stone))
+	{
+		rhs.AddBaseElement(Fire);
+		rhs.AddBaseElement(Water);
+	}
+	else if (op == '/' && (type == Metal))
+	{
+		rhs.AddBaseElement(Fire);
+		rhs.AddBaseElement(Earth);
+	}
+	else if (op == '/' && (type == Energy))
+	{
+		rhs.AddBaseElement(Air);
+		rhs.AddBaseElement(Water);
+	}
+	else if (op == '/' && (type == Spirit))
+	{
+		rhs.AddBaseElement(Air);
+		rhs.AddBaseElement(Air);
+	}
+	else if (op == '/' && (type == Gold))
+	{
+		rhs.AddDerivatedElement(Metal);
+		rhs.AddDerivatedElement(Metal);
+	}
 }
 Formula::Formula(Equation lhs, Equation rhs)
 {
@@ -138,5 +247,5 @@ char Formula::GetOp()
 }
 bool Formula::Valid()
 {
-	
+	return lhs.IsValid();
 }
