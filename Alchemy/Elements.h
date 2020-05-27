@@ -1,6 +1,5 @@
 #include <iostream>
-enum BaseType { Earth, Fire, Water, Air  };
-enum DerivedType { PhilosophersStone, Metal, Stone, Energy, Spirit, Gold };
+enum Type { Earth, Fire, Water, Air, PhilosophersStone, Metal, Stone, Energy, Spirit, Gold};
 
 class Elements
 {
@@ -10,6 +9,7 @@ public:
 	virtual bool ReactsWithWater() = 0;
 	virtual bool ReactsWithAir() = 0;
 
+	virtual Type GetType()=0;
 	virtual bool ReactsWithPhilosophersStone() = 0;
 	virtual bool ReactsWithMetal() = 0;
 	virtual bool ReactsWithStone() = 0;
@@ -19,12 +19,14 @@ public:
 
 	virtual Elements* clone() = 0;
 };
+
 class BaseElement :public Elements
 {
 private:
-	BaseType type;
+	Type type;
 public:
-	BaseType GetType();
+	BaseElement(Type type);
+	Type GetType();
 	bool ReactsWithEarth();
 	bool ReactsWithFire();
 	bool ReactsWithWater();
@@ -39,7 +41,14 @@ public:
 
 	Elements* clone();
 };
-BaseType BaseElement::GetType()
+BaseElement::BaseElement(Type type)
+{
+	if (type == Earth, type == Fire, type == Water, type == Air)
+	{
+		this->type = type;
+	}
+}
+Type BaseElement::GetType()
 {
 	return type;
 }
@@ -154,11 +163,11 @@ Elements* BaseElement::clone()
 class DerivedElement :public Elements
 {
 private:
-	DerivedType type;
+	Type type;
 	bool DerivesFrom[4];
 public:
-	DerivedElement(DerivedType type);
-	DerivedType GetType();
+	DerivedElement(Type type);
+	Type GetType();
 	bool ReactsWithEarth();
 	bool ReactsWithFire();
 	bool ReactsWithWater();
@@ -173,9 +182,12 @@ public:
 
 	Elements* clone();
 };
-DerivedElement::DerivedElement(DerivedType type)
+DerivedElement::DerivedElement(Type type)
 {
-	this->type = type;
+	if (type==Metal || type==Stone || type==Energy || type == Spirit || type==Gold || type == PhilosophersStone)
+	{
+		this->type = type;
+	}
 	if (type==Metal)
 	{
 		this->DerivesFrom[0] = { 1 };
@@ -212,33 +224,25 @@ DerivedElement::DerivedElement(DerivedType type)
 		this->DerivesFrom[3] = { 1 };
 	}
 }
-DerivedType DerivedElement::GetType()
+Type DerivedElement::GetType()
 {
 	return type;
 }
 bool DerivedElement::ReactsWithEarth()
 {
-	if (DerivesFrom[0] == 1)
-		return true;
-	return false;
+	return DerivesFrom[0];
 }
 bool DerivedElement::ReactsWithFire()
 {
-	if (DerivesFrom[1] == 1)
-		return true;
-	return false;
+	return DerivesFrom[1];
 }
 bool DerivedElement::ReactsWithWater()
 {
-	if (DerivesFrom[2] == 1)
-		return true;
-	return false;
+	return DerivesFrom[2];
 }
 bool DerivedElement::ReactsWithAir()
 {
-	if (DerivesFrom[3] == 1)
-		return true;
-	return false;
+	return DerivesFrom[3];
 }
 
 bool DerivedElement::ReactsWithPhilosophersStone()
@@ -271,3 +275,4 @@ Elements* DerivedElement::clone()
 	DerivedElement* NewEl = new DerivedElement(*this);
 	return NewEl;
 }
+
