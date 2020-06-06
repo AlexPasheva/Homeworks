@@ -1,36 +1,33 @@
-#include "Term.h"
-
-class Variable : public Term
+#include "Expression.h"
+class Variable : public Expression
 {
 public:
-	Variable(char var);
-
 	char var;
-
-	void print() override;
-	int eval() override;
-	Term* clone() override;
-	bool Equals(Term* other) override;
+	Variable(char var);
+	void Print() override;
+	bool Eval(const Interpret& i) override;
+	Expression* clone() override;
+	bool Equals(Expression* other) override;
 };
 
-Variable::Variable(char var) :Term(2), var(var)
+Variable::Variable(char var) :Expression(2), var(var)
 {}
 
-void Variable::print()
+void Variable::Print()
 {
 	std::cout << var;
 }
-int Variable::eval()
+bool Variable::Eval(const Interpret& i)
 {
-	return 0; //temp
+	return i.GetValue(var);
 }
-Term* Variable::clone()
+Expression* Variable::clone()
 {
 	return new Variable(*this);
 }
-bool Variable::Equals(Term* other)
+bool Variable::Equals(Expression* other)
 {
-	if (other->getType() != 2)
+	if (other->GetType() != 2)
 		return false;
 	Variable* converted = (Variable*)other;
 	return var == converted->var;
