@@ -1,38 +1,39 @@
-﻿#pragma once
-#include "Term.h"
-class Operation : public Term
+#pragma once
+#include "Expression.h"
+class Operation : public Expression
 {
+public:
+	Operation(Expression* left, char op, Expression* right);
+	Operation(char op, Expression* left);
+
+	void Print() override;
+	bool Eval(const Interpret& i) override;
+
+	Expression* clone() override;
+	bool Equals(Expression* other) override;
+	~Operation();
 private:
 	void setOperator(char op);
 	char op;
-	Term* left;
-	Term* right;
-public:
-	Operation(Term* right, char op, Term* left);
-	Operation(char op, Term* left);
+	Expression* left;
+	Expression* right;
 
-	void print() override;
-	int eval() override;
-
-	Term* clone() override;
-	bool Equals(Term* other) override;
-	~Operation();
 };
-Operation::Operation(Term* right, char op, Term* left) : Term(1)
+Operation::Operation(Expression* right, char op, Expression* left) : Expression(1)
 {
 	this->left = left;
 	this->right = right;
 	setOperator(op);
 }
-Operation::Operation(char op, Term* left) : Term(1)
+Operation::Operation(char op, Expression* left) : Expression(1)
 {
 	this->left = left;
 	setOperator(op);
 }
-void Operation::print()
+void Operation::Print()
 {
 	std::cout << "(";
-	right->print();
+	right->Print();
 	switch (op)
 	{
 	case '&': std::cout<<"^" ; break;//and
@@ -41,17 +42,17 @@ void Operation::print()
 	case '#': std::cout << "<=>"; break;//biconditional//XNOR
 	case '^': std::cout << "+"; break;//XOR
 	}
-	left->print();
+	left->Print();
 	std::cout << ")";
 }
-int Operation::eval()
+bool Operation::Eval(const Interpret& i)
 {
-	bool lhs = left->eval();
+	bool lhs = left->Eval(i);
 	if (op=='!')
 	{
 		return !lhs;
 	}
-	bool rhs = right->eval();
+	bool rhs = right->Eval(i);
 
 	switch (op)
 	{
@@ -65,24 +66,22 @@ int Operation::eval()
 }
 void Operation::setOperator(char op)
 {
-	if (op != '&' && op != '|' && op != '>' && op != '#' && op != '^')
+	if (op != '&' && op != '|' && op != '>' && op != '#' && op != '^'/* && op != '!'*/)
 		throw "Invalid opera=tion";
 
 	this->op = op;
 }
-Term* Operation::clone()
+Expression* Operation::clone()
 {
 	Operation* cloned = new Operation(*this);
 	return cloned;
 }
-bool Operation::Equals(Term* other)
+bool Operation::Equals(Expression* other)
 {
-	if (other->getType() != 1)
+	if (other->GetType() != 1)
 		return false;
 	Operation* otherPTR = (Operation*)other;
-	return op == otherPTR->op
-		&& left->Equals(otherPTR->left)
-		&& right->Equals(otherPTR->right);
+	return op == otherPTR->op && left->Equals(otherPTR->left) && right->Equals(otherPTR->right);
 }
 Operation::~Operation()
 {
