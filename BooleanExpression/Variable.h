@@ -11,7 +11,8 @@ public:
 };
 
 Variable::Variable(char var) :Expression(2), var(var)
-{}
+{
+}
 
 void Variable::Print()
 {
