@@ -32,7 +32,14 @@ Operation::Operation(char op, Expression* left) : Expression(1)
 }
 void Operation::Print()
 {
-	std::cout << "(";
+	if (op == '!')
+	{
+		std::cout << '(';
+		std::cout << '!';
+		left->Print();
+		std::cout << ')';
+		return;
+	}
 	right->Print();
 	switch (op)
 	{
@@ -43,12 +50,11 @@ void Operation::Print()
 	case '^': std::cout << "+"; break;//XOR
 	}
 	left->Print();
-	std::cout << ")";
 }
 bool Operation::Eval(const Interpret& i)
 {
 	bool lhs = left->Eval(i);
-	if (op=='!')
+	if (op == '!')
 	{
 		return !lhs;
 	}
@@ -58,7 +64,7 @@ bool Operation::Eval(const Interpret& i)
 	{
 	case '&': return lhs && rhs; break;//and
 	case '|': return lhs || rhs; break;//or
-	case '>': return  !lhs || rhs; break;//implication
+	case '>': return  (!lhs) || rhs; break;//implication
 	case '#': return (lhs && rhs) || (!lhs && !rhs); break;//biconditional//XNOR
 	case '^': return lhs ^ rhs; break;//XOR
 	}
@@ -66,7 +72,7 @@ bool Operation::Eval(const Interpret& i)
 }
 void Operation::setOperator(char op)
 {
-	if (op != '&' && op != '|' && op != '>' && op != '#' && op != '^'/* && op != '!'*/)
+	if (op != '&' && op != '|' && op != '>' && op != '#' && op != '^' && op != '!')
 		throw "Invalid opera=tion";
 
 	this->op = op;
